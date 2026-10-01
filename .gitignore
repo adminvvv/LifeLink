@@ -25,3 +25,4 @@ logs/
 
 # Local Minecraft development worlds
 run/
+!mc26/gradle/wrapper/gradle-wrapper.jar

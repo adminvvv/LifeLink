@@ -2,14 +2,21 @@
 
 LifeLink is my Fabric mod for shared deaths in Minecraft multiplayer. When one
 player dies, everyone linked to them dies too.
-One JAR supports Minecraft **1.21 through 1.21.11**.
+I build LifeLink 1.0.1 for two Minecraft families:
+
+| Minecraft | LifeLink file | Java | Fabric Loader |
+| --- | --- | --- | --- |
+| 1.21–1.21.11 | `lifelink-1.0.1.jar` | 21 | 0.18.4+ |
+| 26.1–26.3, including 26.1.1 and 26.1.2 | `lifelink-1.0.1-mc26.jar` | 25 | 0.19.5+ |
+
+Use the file for your Minecraft family. Install one LifeLink JAR at a time.
 
 ## Install
 
-Requires **Java 21**, **Fabric Loader 0.18.4+**, and **Fabric API 0.102.0+** built
-for your Minecraft version. See [tested dependencies](docs/COMPATIBILITY.md).
+Requires Java and Fabric Loader from the table above, and Fabric API built for
+your exact Minecraft version. See [tested dependencies](docs/COMPATIBILITY.md).
 
-Put `lifelink-1.0.1.jar` and Fabric API in the server's `mods` folder. Players do
+Put the matching LifeLink JAR and Fabric API in the server's `mods` folder. Players do
 not need LifeLink installed to join a dedicated server. For singleplayer or LAN,
 install both mods locally so LifeLink can run on the world's integrated server.
 
@@ -64,11 +71,29 @@ a distribution checksum. Fabric Loom is pinned to 1.14.10.
 The distributable is `build/libs/lifelink-1.0.1.jar`. The `-sources.jar` is for
 developers. Test reports are under `build/reports/tests/test/`.
 
+For Minecraft 26.x, set `JAVA_HOME` to a JDK 25 installation and run:
+
+```powershell
+.\mc26\gradlew.bat -p mc26 build
+```
+
+On Linux or macOS, use `bash ./mc26/gradlew -p mc26 build`. This build pins Gradle
+9.8.0 and Loom 1.18.2. Its distributable is
+`mc26/build/libs/lifelink-1.0.1-mc26.jar`.
+
 To check the same release JAR across every supported version, use PowerShell 7:
 
 ```powershell
 .\compatibility\Test-Compatibility.ps1 -Jar build/libs/lifelink-1.0.1.jar
 ```
+
+With JDK 25, check the 26.x artifact using:
+
+```powershell
+.\mc26\compatibility\Test-Compatibility.ps1 -Jar build/libs/lifelink-1.0.1-mc26.jar
+```
+
+The 26.x runner resolves `-Jar` relative to `mc26/`.
 
 The [compatibility report](docs/COMPATIBILITY.md) describes the automated checks
 and live multiplayer checklist. Version pins live in `compatibility/versions.json`.
@@ -83,14 +108,17 @@ and worlds stay in the ignored `run/` directory.
 - `gradle.properties`: dependencies, release version, and supported Minecraft range.
 - `build.gradle`: Java toolchain, tests, resource expansion, and packaging.
 - `src/main/resources/fabric.mod.json`: mod identity and runtime requirements.
-- `src/main/java/io/github/adminvvv/lifelink/`: shared logic and compatibility helpers.
+- `common/src/main/java/io/github/adminvvv/lifelink/`: shared death rules and saved state.
+- `src/main/java/io/github/adminvvv/lifelink/`: 1.21 Fabric integration and compatibility helpers.
+- `mc26/`: 26.x build, Fabric integration, tests and compatibility matrix.
 - `src/test/java/io/github/adminvvv/lifelink/`: behavior tests.
 - `compatibility/`: pinned version matrix and release JAR audit runner.
 
 I use Fabric events for deaths, joins, respawns, and server lifecycle changes.
 The compatibility helpers handle changes to Minecraft's kill methods and command
-permissions. I build against Minecraft 1.21 and check the same JAR on every
-supported version.
+permissions in the 1.21 build. The 26.x build uses Minecraft's official class names.
+Both builds compile the same round and persistence logic. I build against the
+oldest version in each family and check the same family JAR on every supported version.
 
 Licensed under MIT. See [LICENSE](LICENSE). The license and mod icon are included
 in every release JAR.

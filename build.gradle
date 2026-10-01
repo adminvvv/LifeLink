@@ -69,6 +69,8 @@ jar {
     }
 }
 
+sourceSets.main.java.srcDir('common/src/main/java')
+
 // Optional binary compatibility audit; normal release builds are unchanged.
 if (project.hasProperty('compatibility_jar')) {
     apply from: 'compatibility/audit.gradle'

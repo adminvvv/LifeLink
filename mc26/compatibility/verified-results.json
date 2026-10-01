@@ -1,0 +1,59 @@
+{
+  "verifiedOn": "2026-10-01",
+  "modVersion": "1.0.1",
+  "java": 25,
+  "fabricLoader": "0.19.5",
+  "loom": "1.18.2",
+  "gradle": "9.8.0",
+  "baseline": "26.1",
+  "minecraftRange": ">=26.1 <=26.3",
+  "auditType": "Same unobfuscated release JAR loaded directly on each target; mocked server/player behavior and Fabric initialization",
+  "liveMultiplayerVerified": false,
+  "results": [
+    {
+      "minecraft": "26.1",
+      "fabric": "0.145.1+26.1",
+      "sha256": "58B0E1F44E0907045D060819548C0B5A003F267156F743A5AE2BBE993F595402",
+      "passed": true,
+      "dependencyOverrides": false,
+      "log": "build/compatibility/26.1/audit.log",
+      "tests": 17
+    },
+    {
+      "minecraft": "26.1.1",
+      "fabric": "0.145.4+26.1.1",
+      "sha256": "58B0E1F44E0907045D060819548C0B5A003F267156F743A5AE2BBE993F595402",
+      "passed": true,
+      "dependencyOverrides": false,
+      "log": "build/compatibility/26.1.1/audit.log",
+      "tests": 17
+    },
+    {
+      "minecraft": "26.1.2",
+      "fabric": "0.155.3+26.1.2",
+      "sha256": "58B0E1F44E0907045D060819548C0B5A003F267156F743A5AE2BBE993F595402",
+      "passed": true,
+      "dependencyOverrides": false,
+      "log": "build/compatibility/26.1.2/audit.log",
+      "tests": 17
+    },
+    {
+      "minecraft": "26.2",
+      "fabric": "0.161.0+26.2",
+      "sha256": "58B0E1F44E0907045D060819548C0B5A003F267156F743A5AE2BBE993F595402",
+      "passed": true,
+      "dependencyOverrides": false,
+      "log": "build/compatibility/26.2/audit.log",
+      "tests": 17
+    },
+    {
+      "minecraft": "26.3",
+      "fabric": "0.161.0+26.3",
+      "sha256": "58B0E1F44E0907045D060819548C0B5A003F267156F743A5AE2BBE993F595402",
+      "passed": true,
+      "dependencyOverrides": false,
+      "log": "build/compatibility/26.3/audit.log",
+      "tests": 17
+    }
+  ]
+}

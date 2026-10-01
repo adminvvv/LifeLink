@@ -1,0 +1,46 @@
+// Opt-in audit: run existing tests against a previously built release JAR.
+// LifeLink source and resources are excluded so they cannot mask linkage errors.
+def releaseJar = file(project.property('compatibility_jar'))
+if (!releaseJar.isFile()) {
+    throw new GradleException("Build the release JAR first: ${releaseJar}")
+}
+layout.buildDirectory = file("build/compatibility/${project.minecraft_version}")
+sourceSets.main.java.setSrcDirs([])
+sourceSets.main.resources.setSrcDirs([])
+sourceSets.test.java.srcDir('compatibility/src/test/java')
+dependencies {
+    implementation files(releaseJar)
+}
+
+def auditRun = layout.buildDirectory.dir('run')
+def auditMinecraft = project.minecraft_version.toString()
+def auditFabric = project.fabric_version.toString()
+def auditLoader = project.loader_version.toString()
+def overrideDependencies = project.findProperty('compatibility_override_dependencies') == 'true'
+def auditSha = java.security.MessageDigest.getInstance('SHA-256').digest(releaseJar.bytes).encodeHex().toString()
+
+test {
+    workingDir auditRun
+    inputs.file(releaseJar)
+    inputs.property('dependencyOverrides', overrideDependencies)
+    // Diagnostic overrides apply only inside this isolated audit, never to a release.
+    doFirst {
+        def config = new File(workingDir, 'config')
+        config.mkdirs()
+        def overrideFile = new File(config, 'fabric_loader_dependencies.json')
+        if (overrideDependencies) {
+            overrideFile.text = groovy.json.JsonOutput.toJson([
+                version: 1,
+                overrides: [lifelink: [depends: [minecraft: auditMinecraft, 'fabric-api': auditFabric,
+                    fabricloader: ('>=' + auditLoader), java: '>=25']]]
+            ])
+        } else {
+            java.nio.file.Files.deleteIfExists(overrideFile.toPath())
+        }
+        logger.lifecycle("LifeLink JAR audit: Minecraft ${auditMinecraft}, SHA-256 ${auditSha}")
+        new File(workingDir, 'artifact.json').text = groovy.json.JsonOutput.prettyPrint(
+            groovy.json.JsonOutput.toJson([minecraft: auditMinecraft, fabric: auditFabric,
+                jar: releaseJar.name, sha256: auditSha, dependencyOverrides: overrideDependencies]))
+    }
+}
+
