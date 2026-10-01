@@ -1,29 +1,27 @@
 {
   "schemaVersion": 1,
   "id": "lifelink",
-  "name": "Life Link",
-  "version": "1.0.0",
-  "description": "Hardcore mod that links deaths between players.",
+  "version": "${version}",
+  "name": "LifeLink",
+  "icon": "assets/lifelink/icon.png",
+  "description": "Links player deaths together for hardcore multiplayer challenges.",
   "authors": [
-    "apifiny"
+    "adminvvv"
   ],
   "contact": {
-    "homepage": "",
-    "sources": ""
+    "sources": "https://github.com/adminvvv/LifeLink"
   },
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.LifeLinkMod"
+      "io.github.adminvvv.lifelink.LifeLinkMod"
     ]
   },
-  "mixins": [
-    "LifeLink.mixins.json"
-  ],
   "depends": {
-    "fabricloader": ">=0.14.6",
-    "fabric": "*",
-    "minecraft": "1.21.5"
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${minecraft_supported_versions}",
+    "java": ">=21",
+    "fabric-api": ">=${fabric_api_min_version}"
   }
 }

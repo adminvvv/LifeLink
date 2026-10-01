@@ -1,52 +1,96 @@
-# LifeLink Mod
+# LifeLink
 
-A Fabric mod for Minecraft 1.21.5.
+LifeLink is my Fabric mod for shared deaths in Minecraft multiplayer. When one
+player dies, everyone linked to them dies too.
+One JAR supports Minecraft **1.21 through 1.21.11**.
 
-## Overview
-LifeLink is a server-side Minecraft mod that links the lives of all players on a server. When one player dies, everyone dies! The mod was originally created for a private SMP and is perfect for cooperative or challenge-based gameplay.
+## Install
 
-## Features
-- **Shared lives:** All players' lives are linked—if one player dies, all players die.
-- **Server-side only:** No client installation required; just add to your server's mods folder.
-- **In-game commands:**
-  - `/lifelink start` — Start the LifeLink challenge.
-  - `/lifelink stop` — Stop the LifeLink challenge.
-  - `/lifelink revive` — Revive all players.
-  - `/lifelink naturaldeaths` — Enable or disable everyone dying from natural causes (e.g., falling, lava, etc.).
-- **Fabric mod loader support for Minecraft 1.21.5.**
+Requires **Java 21**, **Fabric Loader 0.18.4+**, and **Fabric API 0.102.0+** built
+for your Minecraft version. See [tested dependencies](docs/COMPATIBILITY.md).
 
-## Installation
+Put `lifelink-1.0.1.jar` and Fabric API in the server's `mods` folder. Players do
+not need LifeLink installed to join a dedicated server. For singleplayer or LAN,
+install both mods locally so LifeLink can run on the world's integrated server.
 
-1. Download the latest release JAR from the [releases](https://github.com/apifiny/LifeLink_1.21.5/releases) page or build it yourself.
-2. Place the JAR file in your Minecraft `mods` folder.
-3. Make sure you are running Minecraft 1.21.5 with [Fabric Loader](https://fabricmc.net/use/) version 0.15.7 or newer.
-4. Launch the game and enjoy!
+Source: [adminvvv/LifeLink](https://github.com/adminvvv/LifeLink).
+Release notes: [CHANGELOG.md](CHANGELOG.md).
 
-## Building from Source
+## Commands
 
-1. Clone this repository:
-   ```
-   git clone https://github.com/apifiny/LifeLink_1.21.5.git
-   ```
-2. Navigate to the project directory:
-   ```
-   cd LifeLink_1.21.5
-   ```
-3. Build the mod using Gradle:
-   ```
-   ./gradlew build
-   ```
-   The built JAR will be in `build/libs/`.
+All commands require an operator player with permission level 2 or the world owner.
 
-## Contributing
+| Command | Behavior |
+| --- | --- |
+| `/lifelink start` | Enable linking and clear the previous shared death. |
+| `/lifelink stop` | Disable linking and clear the shared death. Players remain in their current game mode. |
+| `/lifelink revive` | Clear the shared death, respawn dead online players, and restore online players to Survival. Linking keeps its current setting. |
+| `/lifelink naturaldeaths` | Toggle deaths without player kill credit. Defaults to on in new worlds. |
+| `/lifelink pvpdeaths` | Toggle deaths with player kill credit. Defaults to off in new worlds. |
 
-Contributions are welcome! Please open issues or pull requests for bug fixes, suggestions, or new features.
+While linking is active, the first qualifying player death kills linked players,
+puts them in Spectator, and displays the first victim's name. Joining and rejoining
+players receive the same death message and title while the shared death is active.
+Respawning players remain in Spectator until the shared death is cleared.
 
-## Credits
+PvP follows vanilla player kill credit, including arrows and deaths attributed to
+recent player combat. Natural deaths and PvP deaths have independent toggles.
+Totem saves do not trigger a shared death.
 
-- [FabricMC](https://fabricmc.net/) for the modding platform.
-- [Yarn](https://github.com/FabricMC/yarn) for mappings.
+`start` does not revive existing spectators; use `revive` for that. Joining before
+a shared death while linking is active restores Survival.
 
-## License
+## Saved worlds
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+LifeLink saves its active setting, death toggles, and first victim in
+`data/lifelink.json` inside the world folder. These settings survive dedicated
+server restarts and leaving and reopening a LAN world.
+
+`start`, `stop`, and `revive` clear the shared death while keeping both death
+toggles. Older version 1 save files retain their natural-death setting and PvP
+linking when upgraded. Use the toggle commands to change those settings.
+
+## Build and test
+
+Use a JDK 21 installation and the checked-in Gradle Wrapper:
+
+```powershell
+.\gradlew.bat clean build
+```
+
+On Linux or macOS, run `bash ./gradlew clean build`. The wrapper pins Gradle 9.2.1 with
+a distribution checksum. Fabric Loom is pinned to 1.14.10.
+
+The distributable is `build/libs/lifelink-1.0.1.jar`. The `-sources.jar` is for
+developers. Test reports are under `build/reports/tests/test/`.
+
+To check the same release JAR across every supported version, use PowerShell 7:
+
+```powershell
+.\compatibility\Test-Compatibility.ps1 -Jar build/libs/lifelink-1.0.1.jar
+```
+
+The [compatibility report](docs/COMPATIBILITY.md) describes the automated checks
+and live multiplayer checklist. Version pins live in `compatibility/versions.json`.
+
+For a development server, run `.\gradlew.bat runServer --args=nogui` on Windows
+or `bash ./gradlew runServer --args=nogui` on Linux or macOS. Review Minecraft's
+EULA in the generated `run/eula.txt` before accepting it. Development server files
+and worlds stay in the ignored `run/` directory.
+
+## Maintenance
+
+- `gradle.properties`: dependencies, release version, and supported Minecraft range.
+- `build.gradle`: Java toolchain, tests, resource expansion, and packaging.
+- `src/main/resources/fabric.mod.json`: mod identity and runtime requirements.
+- `src/main/java/io/github/adminvvv/lifelink/`: shared logic and compatibility helpers.
+- `src/test/java/io/github/adminvvv/lifelink/`: behavior tests.
+- `compatibility/`: pinned version matrix and release JAR audit runner.
+
+I use Fabric events for deaths, joins, respawns, and server lifecycle changes.
+The compatibility helpers handle changes to Minecraft's kill methods and command
+permissions. I build against Minecraft 1.21 and check the same JAR on every
+supported version.
+
+Licensed under MIT. See [LICENSE](LICENSE). The license and mod icon are included
+in every release JAR.

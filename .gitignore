@@ -17,6 +17,11 @@ Thumbs.db
 
 # Logs
 *.log
+logs/
 
 # Local build artifacts
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local Minecraft development worlds
+run/
